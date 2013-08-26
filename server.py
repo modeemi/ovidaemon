@@ -34,8 +34,7 @@ class Kerberos(basic.LineReceiver):
         if self.transport:
             if not self._allowed:
                 if self.transport.connected:
-                    self.transport.write("No.\n")
-                    print "disallow access"
+                    self.deny_access()
                 self.transport.loseConnection()
 
     def tokenPassed(self):
@@ -69,14 +68,19 @@ class Kerberos(basic.LineReceiver):
         print "Disconnected"
         self.factory.clients.remove(self)
 
+    def deny_access(self):
+        print "no access for %s" % (self._user_info)
+        self.sendLine("Kerberos bites off your head.")
+        self.transport.loseConnection()
+
     def lineReceived(self, data):
         print "hello data %s" % (data)
         if data == self.expect_token:
-            self.sendLine("Yes!")
+            self.sendLine("You shall live another day.")
             self._allow_access(self._user_info)
+            self.transport.loseConnection()
         else:
-            self.sendLine("No.")
-        self.transport.loseConnection()
+            self.deny_access()
 
 ident_factory = protocol.ClientCreator(reactor, ident.IdentClient)
 
