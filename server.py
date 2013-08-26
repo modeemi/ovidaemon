@@ -12,9 +12,11 @@ class Kerberos(basic.LineReceiver):
 
     def __init__(self,
                  is_allowed_host,
-                 is_allowed_user):
+                 is_allowed_user,
+                 allow_access):
         self._is_allowed_host = is_allowed_host
         self._is_allowed_user = is_allowed_user
+        self._allow_access = allow_access
 
     def _ident_connected(self, ident_client):
         print "Ident connected: %s" % (ident_client)
@@ -47,6 +49,7 @@ class Kerberos(basic.LineReceiver):
     def _ident_received(self, (type, info)):
         (system_type, user_info) = re.split(":", info)
         print "ident info received %s" % (info)
+        self._user_info = user_info
         allow = self._is_allowed_user(system_type, user_info)
         if allow:
             self._ident_succeeded()
@@ -70,16 +73,18 @@ class Kerberos(basic.LineReceiver):
         print "hello data %s" % (data)
         if data == self.expect_token:
             self.sendLine("Yes!")
+            self._allow_access(self._user_info)
         else:
             self.sendLine("No.")
         self.transport.loseConnection()
 
 ident_factory = protocol.ClientCreator(reactor, ident.IdentClient)
 
-def make_server_factory(is_allowed_host, is_allowed_user):
+def make_server_factory(is_allowed_host, is_allowed_user, allow_access):
     kerberos_factory = protocol.ServerFactory()
     kerberos_factory.protocol = lambda: Kerberos(is_allowed_host,
-                                                 is_allowed_user)
+                                                 is_allowed_user,
+                                                 allow_access)
     kerberos_factory.clients = []
 
     return kerberos_factory
@@ -99,7 +104,10 @@ def main():
         print "system_type=%s, user_info=%s" % (system_type, user_info)
         return system_type == "UNIX" and allowed_users.count(user_info) > 0
 
-    factory = make_server_factory(is_allowed_host, is_allowed_user)
+    def allow_access(user_info):
+        print "Access granted to %s" % user_info
+
+    factory = make_server_factory(is_allowed_host, is_allowed_user, allow_access)
 
     reactor.listenTCP(8000, factory)
     reactor.run()
