@@ -82,13 +82,12 @@ def main():
 
     def is_allowed_user(system_type, user_info):
         print "system_type=%s, user_info=%s" % (system_type, user_info)
-        return system_type == "UNIX" and allowed_users.count("flux") > 0
+        return system_type == "UNIX" and allowed_users.count(user_info) > 0
 
     factory = make_server_factory(is_allowed_host, is_allowed_user)
 
     reactor.listenTCP(8000, factory)
     reactor.run()
     
-
 if __name__ == "__main__":
     main()
