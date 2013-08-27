@@ -7,12 +7,17 @@ import os
 import serial
 import signal
 
+import server # server listening at part 420
+from twisted.internet import reactor
+import threading
+
 def keybhandler(signum, frame):
 	pass # Ignore SIGINT
 signal.signal(signal.SIGINT, keybhandler)
 signal.signal(signal.SIGTSTP, keybhandler) # Ignore suspend (ctrl+z)
 
 LATESTFILE = "/home/pi/latest_in" # Name of latest sesamer
+SERVER_PORT = 420
 
 
 def login():
@@ -46,6 +51,33 @@ def sesam(username = None):
 	ser.close()
 	return
 
+def authenticate(user):
+        return user in grp.getgrnam("ovi").gr_mem
+
+def setup_server():
+        allowed_hosts = ["127.0.0.1",
+                         "130.230.72.140", # coffee
+                         "130.230.72.137", # battery
+                         "130.230.72.137"] # cherry
+
+        def is_allowed_host(peer):
+                return allowed_hosts.count(peer.host)
+
+        def is_allowed_user(system_type, user_info):
+                return system_type == "UNIX" and authenticate(user_info)
+
+        def allow_access(user_info):
+                print "Access granted to %s" % user_info
+                sesam(user_info)
+
+        factory = server.make_server_factory(is_allowed_host, is_allowed_user, allow_access)
+
+        reactor.listenTCP(SERVER_PORT, factory)
+
+setup_server()
+threading.Thread(target=reactor.run).start()
+
+# TODO: move code below to twisted event loop
 while True:
 	os.system("clear")
 	print_motd()
@@ -55,8 +87,7 @@ while True:
 		username = None
 
 	if(username):
-		members = grp.getgrnam("ovi")[3]
-		if(username in members):
+		if(authenticate(username)):
 			print " You shall pass."
 			sesam(username)
 	else:
