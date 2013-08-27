@@ -79,8 +79,8 @@ class Kerberos(basic.LineReceiver):
         print "hello data %s" % (data)
         if data == self.expect_token:
             self.sendLine("You shall live another day.")
-            self._allow_access(self._user_info)
             self.transport.loseConnection()
+            self._allow_access(self._user_info)
         else:
             self.deny_access()
 
