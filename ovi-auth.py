@@ -18,7 +18,10 @@ signal.signal(signal.SIGTSTP, keybhandler) # Ignore suspend (ctrl+z)
 
 LATESTFILE = "/home/pi/latest_in" # Name of latest sesamer
 SERVER_PORT = 420
-
+ALLOWED_HOSTS = ["127.0.0.1",
+                 "130.230.72.140", # coffee
+                 "130.230.72.137", # battery
+                 "130.230.72.137"] # cherry
 
 def login():
 	username = raw_input(" Username: ")
@@ -55,13 +58,8 @@ def authenticate(user):
         return user in grp.getgrnam("ovi").gr_mem
 
 def setup_server():
-        allowed_hosts = ["127.0.0.1",
-                         "130.230.72.140", # coffee
-                         "130.230.72.137", # battery
-                         "130.230.72.137"] # cherry
-
         def is_allowed_host(peer):
-                return allowed_hosts.count(peer.host)
+                return ALLOWED_HOSTS.count(peer.host)
 
         def is_allowed_user(system_type, user_info):
                 return system_type == "UNIX" and authenticate(user_info)
