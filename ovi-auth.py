@@ -46,7 +46,7 @@ def sesam(username = None):
 		latest_in.close()
 	else:
 		latest_in = open(LATESTFILE, "w") # Empty the file
-		latest_close()
+		latest_in.close()
 	
 	#os.system("perl /home/pi/opensesame.pl")
 	ser = serial.Serial("/dev/ttyUSB0", 9600, timeout=1)
