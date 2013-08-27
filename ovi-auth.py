@@ -59,7 +59,7 @@ def authenticate(user):
 
 def setup_server():
         def is_allowed_host(peer):
-                return ALLOWED_HOSTS.count(peer.host)
+                return ALLOWED_HOSTS.count(peer.host) > 0
 
         def is_allowed_user(system_type, user_info):
                 return system_type == "UNIX" and authenticate(user_info)

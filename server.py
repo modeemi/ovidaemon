@@ -103,7 +103,7 @@ def main():
     allowed_users = ["root", "flux"]
 
     def is_allowed_host(peer):
-        return allowed_hosts.count(peer.host)
+        return allowed_hosts.count(peer.host) > 0
 
     def is_allowed_user(system_type, user_info):
         print "system_type=%s, user_info=%s" % (system_type, user_info)
