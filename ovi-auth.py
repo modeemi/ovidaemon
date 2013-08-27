@@ -72,22 +72,26 @@ def setup_server():
 
         reactor.listenTCP(SERVER_PORT, factory)
 
-setup_server()
-threading.Thread(target=reactor.run).start()
-
 # TODO: move code below to twisted event loop
-while True:
-	os.system("clear")
-	print_motd()
-	try:
-		username = login()
-	except EOFError:
-		username = None
+def interactive_session():
+        while True:
+                os.system("clear")
+                print_motd()
+                try:
+                        username = login()
+                except EOFError:
+                        username = None
 
-	if(username):
-		if(authenticate(username)):
-			print " You shall pass."
-			sesam(username)
-	else:
-		print " Suddenly, the dungeon collapses."
-		time.sleep(5)
+                if(username):
+                        if(authenticate(username)):
+                                print " You shall pass."
+                                sesam(username)
+                else:
+                        print " Suddenly, the dungeon collapses."
+                        time.sleep(5)
+
+setup_server()
+
+threading.Thread(target=interactive_session).start()
+reactor.run()
+
