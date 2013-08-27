@@ -23,7 +23,8 @@ class Kerberos(basic.LineReceiver):
         port_on_server = self.transport.getHost().port
         if self._is_allowed_host(self.transport.getPeer()):
             port_on_client = self.transport.getPeer().port
-            ident_client.lookup(port_on_client, port_on_server) \
+            # KLUDGE. WTH? port_on_server is not the port we're actually listening at? hardcoded for now.
+            ident_client.lookup(port_on_client, 420) \
                         .addCallback(self._ident_received) \
                         .addErrback(self._ident_failed)
         else:
