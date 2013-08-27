@@ -20,10 +20,10 @@ class Kerberos(basic.LineReceiver):
 
     def _ident_connected(self, ident_client):
         print "Ident connected: %s" % (ident_client)
-        port_on_server = ident_client.transport.getHost().port
-        if self._is_allowed_host(ident_client.transport.getPeer()):
-            port_on_client = ident_client.transport.getPeer().port
-            ident_client.lookup(port_on_server, port_on_client) \
+        port_on_server = self.transport.getHost().port
+        if self._is_allowed_host(self.transport.getPeer()):
+            port_on_client = self.transport.getPeer().port
+            ident_client.lookup(port_on_client, port_on_server) \
                         .addCallback(self._ident_received) \
                         .addErrback(self._ident_failed)
         else:
