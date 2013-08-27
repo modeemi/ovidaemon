@@ -60,6 +60,7 @@ class Kerberos(basic.LineReceiver):
         self.expect_token = generate_random_token()
         self.factory.clients.append(self)
         self._allowed = False
+        self._user_info = None
         ident_factory.connectTCP(self.transport.getPeer().host, 113) \
             .addCallback(self._ident_connected) \
             .addErrback(self._ident_failed)
