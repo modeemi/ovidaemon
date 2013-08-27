@@ -19,7 +19,7 @@ class Kerberos(basic.LineReceiver):
         self._allow_access = allow_access
 
     def _ident_connected(self, ident_client):
-        print "Ident connected: %s" % (ident_client)
+        #print "Ident connected: %s" % (ident_client)
         port_on_server = self.transport.getHost().port
         if self._is_allowed_host(self.transport.getPeer()):
             port_on_client = self.transport.getPeer().port
@@ -39,16 +39,17 @@ class Kerberos(basic.LineReceiver):
                 self.transport.loseConnection()
 
     def tokenPassed(self):
-        print "Token passed"
+        #print "Token passed"
+        pass
 
     def _ident_succeeded(self):
         self._allowed = True
         self.sendLine(self.expect_token)
-        print "allowing access, sent token"
+        #print "allowing access, sent token"
 
     def _ident_received(self, (type, info)):
         (system_type, user_info) = re.split(":", info)
-        print "ident info received %s" % (info)
+        #print "ident info received %s" % (info)
         self._user_info = user_info
         allow = self._is_allowed_user(system_type, user_info)
         if allow:
@@ -57,7 +58,7 @@ class Kerberos(basic.LineReceiver):
             self._ident_failed(None)
 
     def connectionMade(self):
-        print "Connected %s %s" % (self, self.transport)
+        #print "Connected %s %s" % (self, self.transport)
         self.expect_token = generate_random_token()
         self.factory.clients.append(self)
         self._allowed = False
@@ -67,16 +68,16 @@ class Kerberos(basic.LineReceiver):
             .addErrback(self._ident_failed)
 
     def connectionLost(self, reason):
-        print "Disconnected"
+        #print "Disconnected"
         self.factory.clients.remove(self)
 
     def deny_access(self):
-        print "no access for %s" % (self._user_info)
+        #print "no access for %s" % (self._user_info)
         self.sendLine("Kerberos bites off your head.")
         self.transport.loseConnection()
 
     def lineReceived(self, data):
-        print "hello data %s" % (data)
+        #print "hello data %s" % (data)
         if data == self.expect_token:
             self.sendLine("You shall live another day.")
             self.transport.loseConnection()
@@ -107,11 +108,12 @@ def main():
         return allowed_hosts.count(peer.host) > 0
 
     def is_allowed_user(system_type, user_info):
-        print "system_type=%s, user_info=%s" % (system_type, user_info)
+        #print "system_type=%s, user_info=%s" % (system_type, user_info)
         return system_type == "UNIX" and allowed_users.count(user_info) > 0
 
     def allow_access(user_info):
-        print "Access granted to %s" % user_info
+        #print "Access granted to %s" % user_info
+        pass
 
     factory = make_server_factory(is_allowed_host, is_allowed_user, allow_access)
 

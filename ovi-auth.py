@@ -65,7 +65,7 @@ def setup_server():
                 return system_type == "UNIX" and authenticate(user_info)
 
         def allow_access(user_info):
-                print "Access granted to %s" % user_info
+                #print "Access granted to %s" % user_info
                 sesam(user_info)
 
         factory = server.make_server_factory(is_allowed_host, is_allowed_user, allow_access)
