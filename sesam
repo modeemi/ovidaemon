@@ -1,0 +1,20 @@
+#!/usr/bin/perl -w
+use strict;
+use IO::Socket::INET;
+
+my $sesamHost = "volt";
+my $sesamPort = "420";
+
+sub sesam() {
+    my $sock = IO::Socket::INET->new(PeerAddr => $sesamHost, PeerPort => $sesamPort, PeerProto => 'tcp');
+    
+    my $line1 = "";
+    my $n = $sock->sysread($line1, 1024);
+    $sock->syswrite($line1);
+    my $line2 = "";
+    $n = $sock->sysread($line2, 1024);
+    print "$line1" if !$line2;
+    print "$line2";
+}
+
+sesam();
