@@ -1,7 +1,7 @@
 [Unit]
 Description=Control Modeemi's clubroom door.
 Documentation=https://github.com/modeemi/ovidaemon
-After=oidentd.service
+After=oidentd.service network-online.target
 
 [Service]
 ExecStart=/opt/ovidaemon/ovi-ng.py
