@@ -1,0 +1,12 @@
+[Unit]
+Description=Control Modeemi's clubroom door.
+Documentation=https://github.com/modeemi/ovidaemon
+After=oidentd.service
+
+[Service]
+ExecStart=/opt/ovidaemon/ovi-ng.py
+Type=exec
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
